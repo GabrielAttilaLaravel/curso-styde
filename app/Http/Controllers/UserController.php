@@ -15,19 +15,18 @@ class UserController extends Controller
                 'Gabriel',
                 'Alexander',
                 'Milagros',
-                'Attila',
-                '<script>alert("Hola")</script>'
+                'Attila'
             ];
         }
 
         $title = 'Listado de Usuarios';
 
-        return view('users', compact('title', 'users'));
+        return view('users.index', compact('title', 'users'));
     }
 
     public function show($id)
     {
-        return "Mostrando detalles del usuario: {$id}";
+        return view('users.show', compact('id'));
     }
 
     public function create()
