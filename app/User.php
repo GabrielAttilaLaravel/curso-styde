@@ -27,6 +27,16 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /**
+     * The p roperty on your model provides a convenient method of converting
+     * attributes to common data types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_admin' => 'boolean'
+    ];
+
     public function findByEmail($email)
     {
         return static::where(compact('email'))->first();
