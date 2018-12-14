@@ -2,16 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\User;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UsersModuleTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /** @test */
     // muestra la lista de usuarios
     function it_shows_the_users_list()
     {
+        factory(User::class)->create(['name' => 'Alexander']);
+        factory(User::class)->create(['name' => 'Milagros']);
+
+
         $this->get('usuarios')
             ->assertStatus(200)
             ->assertSee('Gabriel')
@@ -24,7 +32,7 @@ class UsersModuleTest extends TestCase
     // Muestra un mensaje predeterminado si la lista de usuarios está vacía.
     function it_shows_a_default_message_if_the_users_list_is_empty()
     {
-        $this->get('usuarios?empty')
+        $this->get('usuarios')
             ->assertStatus(200)
             ->assertSee('No hay usuarios registrados.');
     }
