@@ -52,6 +52,19 @@ class UsersModuleTest extends TestCase
             ->assertSee('Correo electrónico: '. $user->email);
     }
 
+
+    /**
+     * muestra un error 404 si el usuario no es encontrado
+     *
+     * @test
+     */
+    function it_displays_a_404_errors_if_the_user_is_not_found()
+    {
+        $this->get('/usuarios/999')
+            ->assertStatus(404)
+            ->assertSee('Página no encontrada');
+    }
+
     /**
      * carga la nueva página de usuarios
      *
