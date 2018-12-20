@@ -29,6 +29,8 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        return 'procesando información';
+        User::create($request->all());
+
+        return redirect()->route('users.index');
     }
 }

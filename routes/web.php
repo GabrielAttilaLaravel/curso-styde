@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/usuarios', 'UserController@index')->name('users.index');
 Route::get('/usuarios/nuevo', 'UserController@create')->name('users.create');
-Route::post('/usuarios/crear', 'UserController@store');
+Route::post('/usuarios', 'UserController@store');
 Route::get('/usuarios/{user}', 'UserController@show')->name('users.show');
 
 Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController@index');

@@ -74,6 +74,25 @@ class UsersModuleTest extends TestCase
     {
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
-            ->assertSee('Crear nuevo usuario');
+            ->assertSee('Crear usuario');
+    }
+
+    /**
+     * crea un nuevo usuario
+     *
+     * @test
+     */
+    function it_creates_a_new_user()
+    {
+        $data = [
+            'name' => 'GabrielAttila',
+            'email' => 'gabrieljmorenot@gmail.com',
+            'password' => bcrypt('123')
+        ];
+
+        $this->post('/usuarios/', $data)
+            ->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', $data);
     }
 }
