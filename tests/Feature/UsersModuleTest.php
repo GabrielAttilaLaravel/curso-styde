@@ -95,4 +95,27 @@ class UsersModuleTest extends TestCase
 
         $this->assertDatabaseHas('users', $data);
     }
+
+    /**
+     * El nombre es requerido
+     * @test
+     */
+    function the_name_is_required()
+    {
+        // el metodo validate redirecciona hacia la pagina anterior para ello usamos
+        // el metodo from() para indicarla en las pruebas
+        $this->from('/usuarios/nuevo')
+            ->post('/usuarios/', [
+                    'name' => '',
+                    'email' => 'gabrieljmorenot@gmail.com',
+                    'password' => bcrypt('123')
+                ])->assertRedirect(route('users.create'))
+            // afirmamos que la sesion tiene errores
+            ->assertSessionHasErrors(['name'], 'El campo name es obligatorio');
+
+        $this->assertEquals(0, User::count());
+//        $this->assertDatabaseMissing('users', [
+//            'email' => 'gabrieljmorenot@gmail.com',
+//        ]);
+    }
 }

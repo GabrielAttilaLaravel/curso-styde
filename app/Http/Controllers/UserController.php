@@ -27,9 +27,19 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        User::create($request->all());
+        $data = request()->validate([
+            'name' => 'required'
+        ],[
+            'name.required' => 'El campo name es obligatorio'
+        ]);
+
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
 
         return redirect()->route('users.index');
     }
