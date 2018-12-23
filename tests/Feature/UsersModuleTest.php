@@ -84,17 +84,14 @@ class UsersModuleTest extends TestCase
      */
     function it_creates_a_new_user()
     {
-
-        $data = [
-            'name' => 'GabrielAttila',
-            'email' => 'gabrieljmorenot@gmail.com',
-            'password' => bcrypt('123')
-        ];
-
-        $this->post('/usuarios/', $data)
+        $this->post('/usuarios/', [
+                'name' => 'GabrielAttila',
+                'email' => 'gabrieljmorenot@gmail.com',
+                'password' => bcrypt('123')
+            ])
             ->assertRedirect(route('users.index'));
 
-        $this->assertDatabaseHas('users', $data);
+        $this->assertEquals(1, User::count());
     }
 
     /**
@@ -107,16 +104,89 @@ class UsersModuleTest extends TestCase
         // el metodo from() para indicarla en las pruebas
         $this->from('/usuarios/nuevo')
             ->post('/usuarios/', [
-                    'name' => '',
-                    'email' => 'gabrieljmorenot@gmail.com',
-                    'password' => bcrypt('123')
-                ])->assertRedirect(route('users.create'))
+                'name' => '',
+                'email' => 'gabrieljmorenot@gmail.com',
+                'password' => bcrypt('123')
+            ])->assertRedirect(route('users.create'))
             // afirmamos que la sesion tiene errores
             ->assertSessionHasErrors(['name'], 'El campo name es obligatorio');
 
         $this->assertEquals(0, User::count());
-//        $this->assertDatabaseMissing('users', [
-//            'email' => 'gabrieljmorenot@gmail.com',
-//        ]);
+    }
+
+    /**
+     * El email es requerido
+     * @test
+     */
+    function the_email_is_required()
+    {
+        $this->from('/usuarios/nuevo')
+            ->post('/usuarios/', [
+                'name' => 'Gabriel',
+                'email' => '',
+                'password' => bcrypt('123')
+            ])->assertRedirect(route('users.create'))
+            // afirmamos que la sesion tiene errores
+            ->assertSessionHasErrors(['email'], 'El campo email es obligatorio');
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /**
+     * el correo debe ser valido
+     * @test
+     */
+    function the_email_must_be_valid()
+    {
+        $this->from('/usuarios/nuevo')
+            ->post('/usuarios/', [
+                'name' => 'Gabriel',
+                'email' => 'correo-no-valido',
+                'password' => bcrypt('123')
+            ])->assertRedirect(route('users.create'))
+            // afirmamos que la sesion tiene errores
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /**
+     * el correo debe ser unico
+     * @test
+     */
+    function the_email_must_be_unique()
+    {
+        factory(User::class)->create([
+            'email' => 'gabrieljmorenot@gmail.com'
+        ]);
+
+        $this->from('/usuarios/nuevo')
+            ->post('/usuarios/', [
+                'name' => 'Gabriel',
+                'email' => 'gabrieljmorenot@gmail.com',
+                'password' => bcrypt('123')
+            ])->assertRedirect(route('users.create'))
+            // afirmamos que la sesion tiene errores
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertEquals(1, User::count());
+    }
+
+    /**
+     * El password es requerido
+     * @test
+     */
+    function the_password_is_required()
+    {
+        $this->from('/usuarios/nuevo')
+            ->post('/usuarios/', [
+                'name' => 'Gabriel',
+                'email' => 'gabrieljmorenot@gmail.com',
+                'password' => ''
+            ])->assertRedirect(route('users.create'))
+            // afirmamos que la sesion tiene errores
+            ->assertSessionHasErrors(['password'], 'El campo password es obligatorio');
+
+        $this->assertEquals(0, User::count());
     }
 }
