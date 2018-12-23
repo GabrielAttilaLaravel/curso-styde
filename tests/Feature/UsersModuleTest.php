@@ -189,4 +189,26 @@ class UsersModuleTest extends TestCase
 
         $this->assertEquals(0, User::count());
     }
+
+    /**
+     * carga la pagina para editar usuario
+     *
+     * @test
+     */
+    function it_loads_the_edit_user_page()
+    {
+        $user = factory(User::class)->create();
+
+        $this->get("/usuarios/{$user->id}/editar")
+            ->assertStatus(200)
+            ->assertSee('Editar usuario')
+            // comprobamos que la vista tiene una variable
+            // comparamos el usuario de la vista con el usuario de la prueba ya que da el error
+            // wasRecentlyCreated en donde en la prueba creamos el usuario recientemente
+            // pero en la vista no por ello el error
+            ->assertViewHas('user', function ($viewUser) use ($user){
+                // compramos el usuario de la vista con el de la prueba
+                return $viewUser->id == $user->id;
+            });
+    }
 }
