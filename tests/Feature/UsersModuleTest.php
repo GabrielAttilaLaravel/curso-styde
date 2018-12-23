@@ -84,6 +84,7 @@ class UsersModuleTest extends TestCase
      */
     function it_creates_a_new_user()
     {
+
         $data = [
             'name' => 'GabrielAttila',
             'email' => 'gabrieljmorenot@gmail.com',
