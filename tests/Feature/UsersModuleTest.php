@@ -205,10 +205,33 @@ class UsersModuleTest extends TestCase
             // comprobamos que la vista tiene una variable
             // comparamos el usuario de la vista con el usuario de la prueba ya que da el error
             // wasRecentlyCreated en donde en la prueba creamos el usuario recientemente
-            // pero en la vista no por ello el error
+            // pero en la vista no, por ello el error
             ->assertViewHas('user', function ($viewUser) use ($user){
-                // compramos el usuario de la vista con el de la prueba
-                return $viewUser->id == $user->id;
+                // comparamos el usuario de la vista con el de la prueba
+                return $viewUser->id === $user->id;
             });
+    }
+
+    /**
+     * actualiza un usuario
+     *
+     * @test
+     */
+    function it_updates_a_user()
+    {
+        $user = factory(User::class)->create();
+        $this->withoutExceptionHandling();
+        $this->put("/usuarios/{$user->id}", [
+            'name' => 'GabrielAttila',
+            'email' => 'gabrieljmorenot@gmail.com',
+            'password' => '123456'
+        ])
+            ->assertRedirect(route('users.show', compact('user')));
+
+        $this->assertCredentials([
+            'name' => 'GabrielAttila',
+            'email' => 'gabrieljmorenot@gmail.com',
+            'password' => '123456'
+        ]);
     }
 }
