@@ -281,27 +281,27 @@ class UsersModuleTest extends TestCase
      */
     function the_email_must_be_unique_when_updating_the_user()
     {
-        self::markTestIncomplete();
-        return;
+        factory(User::class)->create([
+            'email' => 'existing-email@example.com'
+        ]);
 
         $user = factory(User::class)->create([
-            'email' => 'gabrieljmorenot@gmail.com'
+            'email' => 'gabrieljmorenot@gmail.com',
         ]);
 
         $this->from("/usuarios/{$user->id}/editar")
             ->put("/usuarios/{$user->id}", [
                 'name' => 'Gabriel',
-                'email' => 'gabrieljmorenot@gmail.com',
+                'email' => 'existing-email@example.com',
                 'password' => bcrypt('123')
             ])->assertRedirect(route('users.edit', compact('user')))
             // afirmamos que la sesion tiene errores
             ->assertSessionHasErrors(['email']);
 
-        $this->assertEquals(1, User::count());
     }
 
     /**
-     * El password es requerido
+     * El password es opcional cuando el usuario esta actualizando
      * @test
      */
     function the_password_is_optional_when_updating_the_user()
@@ -323,6 +323,30 @@ class UsersModuleTest extends TestCase
             'name' => 'Gabriel',
             'email' => 'gabrieljmorenot@gmail.com',
             'password' => $oldPassword
+        ]);
+    }
+
+    /**
+     * El correo del usuario puede permanecer igual al actualizar al usuario.
+     * @test
+     */
+    function the_users_mail_can_stay_the_same_when_updating_the_user()
+    {
+        $user = factory(User::class)->create([
+            'email' => 'gabrieljmorenot@gmail.com',
+        ]);
+
+        $this->from("usuarios/{$user->id}/editar")
+            ->put("usuarios/{$user->id}", [
+                'name' => 'Gabriel Moreno',
+                'email' => 'gabrieljmorenot@gmail.com',
+                'password' => '123456'
+            ])
+            ->assertRedirect("usuarios/{$user->id}");
+
+        $this->assertDatabaseHas('users',[
+            'name' => 'Gabriel Moreno',
+            'email' => 'gabrieljmorenot@gmail.com',
         ]);
     }
 }
