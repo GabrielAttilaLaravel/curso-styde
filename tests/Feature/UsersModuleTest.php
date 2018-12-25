@@ -349,4 +349,22 @@ class UsersModuleTest extends TestCase
             'email' => 'gabrieljmorenot@gmail.com',
         ]);
     }
+
+    /**
+     * Elimina un usuario
+     * @test
+     */
+    public function it_deletes_a_user()
+    {
+        $user = factory(User::class)->create();
+
+        $this->delete(route('users.destroy', $user->id))
+            ->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id
+        ]);
+
+        //$this->assertSame(0, User::count());
+    }
 }
